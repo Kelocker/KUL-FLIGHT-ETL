@@ -3,6 +3,8 @@
 
 This project is an automated ETL pipeline that extracts live flight data from Kuala Lumpur International Airport (KUL) and displays it on a Japanese-terminal style dashboard.
 
+![KUL Flight Board Demo](https://lh3.googleusercontent.com/u/0/d/1zgB0-xocXhxn2x9goXJsBf4LOBxK1Rxg)
+
 ## Architecture
 - **Extract**: Python (Requests) fetching from Aviationstack API.
 - **Transform**: Pandas for data cleaning and type conversion.
