@@ -72,9 +72,18 @@ try:
     st.markdown("<h3 style='color: #f0f0f0;'>SCHEDULE / 運行スケジュール</h3>", unsafe_allow_html=True)
     st.dataframe(df, width='stretch', hide_index=True)
 
-    # 8. Footer with Timestamp
+    # 8. Footer with Timestamp and Repository Link
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    st.markdown(f"<p style='color: #444; text-align: center; font-size: 12px; margin-top: 50px;'>LAST UPDATED: {current_time} MYT | KUL TERMINAL 1</p>", unsafe_allow_html=True)
+
+    st.markdown("<br><hr style='border-color: #333;'>", unsafe_allow_html=True)
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        st.markdown(f"<p style='color: #444; font-size: 12px;'>LAST UPDATED: {current_time} MYT</p>", unsafe_allow_html=True)
+
+    with col_right:
+        # Replace '#' with your actual GitHub URL
+        st.markdown(f"<p style='color: #444; font-size: 12px; text-align: right;'><element style='color: #888;'>SOURCE:</element> <a href='https://github.com/Kelocker/KUL-FLIGHT-ETL' style='color: #ffaa00; text-decoration: none;'>GITHUB REPOSITORY / リポジトリ</a></p>", unsafe_allow_html=True)
 
 except Exception as e:
     st.error("Waiting for initial data sync...")
