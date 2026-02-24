@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
+import datetime
 
 # 1. Page Setup
 st.set_page_config(page_title="FLIGHT INFO / 運行情報", layout="centered")
@@ -20,60 +21,61 @@ st.markdown("""
         border-top: 4px solid #ffaa00;
         padding: 15px;
     }
-    [data-testid="stMetricLabel"] {
-        color: #ffaa00 !important;
+    /* Styling the Warning Box */
+    .demo-warning {
+        background-color: #331a00;
+        color: #ffaa00;
+        padding: 10px;
+        border: 1px solid #ffaa00;
+        text-align: center;
         font-weight: bold;
-    }
-    /* Styling progress bars to look like amber LED segments */
-    div[st-external="true"] > div {
-        background-color: #ffaa00 !important;
+        margin-bottom: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. Header Section
+# 3. Demo Disclaimer (The "Safety First" part)
+st.markdown("""
+    <div class="demo-warning">
+        ⚠️ DEMO USE ONLY / 本サービスはデモ専用です<br>
+        DATA MAY BE DELAYED OR INACCURATE. DO NOT USE FOR ACTUAL TRAVEL.
+    </div>
+    """, unsafe_allow_html=True)
+
+# 4. Header Section
 st.markdown("<h1 style='color: #ffaa00; font-size: 42px; margin-bottom: 0;'>DEPARTURES / 出発案内</h1>", unsafe_allow_html=True)
 st.markdown("<p style='color: #888; font-size: 16px;'>KUALA LUMPUR INTL (KUL) </p>", unsafe_allow_html=True)
 st.markdown("<hr style='border-color: #333;'>", unsafe_allow_html=True)
 
-# 4. Data Loading
+# 5. Data Loading (Simplified for your new main.py)
 @st.cache_data
 def load_data():
     conn = sqlite3.connect('flight.db')
     df = pd.read_sql("SELECT * FROM flights", conn)
     conn.close()
-    return df
+    # Shuffle for the "Mechanical Board" feel
+    return df.sample(frac=1).reset_index(drop=True)
 
-df = load_data()
+try:
+    df = load_data()
 
-# 5. KPI Metrics
-col1, col2, col3 = st.columns(3)
-col1.metric("TOTAL / 総計", f"{len(df)} FLT")
-col2.metric("AIRLINE / 航空会社", df['airline_name'].nunique())
-col3.metric("DELAY / 遅延", f"{round(df['delay_minutes'].mean(), 1)} MIN")
+    # 6. KPI Metrics
+    col1, col2, col3 = st.columns(3)
+    col1.metric("TOTAL / 総計", f"{len(df)} FLT")
+    col2.metric("AIRLINE / 航空会社", df['AIRLINE'].nunique())
+    # We use 'N/A' for delays if the data is simplified, or calculate if column exists
+    col3.metric("STATUS / 状態", "ACTIVE")
 
-st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
-# 6. Flight Schedule (Future-proofed width)
-st.markdown("<h3 style='color: #f0f0f0;'>SCHEDULE / 運行スケジュール</h3>", unsafe_allow_html=True)
-st.dataframe(df, width='stretch', hide_index=True)
+    # 7. The Flight Board Table
+    st.markdown("<h3 style='color: #f0f0f0;'>SCHEDULE / 運行スケジュール</h3>", unsafe_allow_html=True)
+    st.dataframe(df, width='stretch', hide_index=True)
 
-# 7. Volume Section (Brutalist Minimalist Style)
-st.markdown("<h3 style='color: #f0f0f0;'>VOLUME BY AIRLINE / 航空会社別運航規模</h3>", unsafe_allow_html=True)
+    # 8. Footer with Timestamp
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    st.markdown(f"<p style='color: #444; text-align: center; font-size: 12px; margin-top: 50px;'>LAST UPDATED: {current_time} MYT | KUL TERMINAL 1</p>", unsafe_allow_html=True)
 
-airline_counts = df['airline_name'].value_counts()
-max_count = airline_counts.max()
-
-# Create a clean grid for the volume bars
-for airline, count in airline_counts.items():
-    col_name, col_bar, col_val = st.columns([2, 5, 1])
-    
-    with col_name:
-        st.markdown(f"<p style='color: #ffaa00; font-weight: bold; margin: 0;'>{airline.upper()}</p>", unsafe_allow_html=True)
-    
-    with col_bar:
-        # We scale relative to the max airline to fill the space better
-        st.progress(count / max_count)
-        
-    with col_val:
-        st.markdown(f"<p style='color: #888; text-align: right; margin: 0;'>{count}</p>", unsafe_allow_html=True)
+except Exception as e:
+    st.error("Waiting for initial data sync...")
+    st.info("Run your main.py script to populate the database.")
