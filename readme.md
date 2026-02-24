@@ -1,7 +1,7 @@
 # KUL FLIGHT ETL & DASHBOARD
-**Real-Time Data Engineering Pipeline / 運行情報**
+**Data Engineering Pipeline / 運行情報**
 
-This project is an automated ETL pipeline that extracts live flight data from Kuala Lumpur International Airport (KUL) and displays it on a Japanese-terminal style dashboard.
+This project is an automated ETL pipeline that captures exactly the top 10 flight records daily at 8:00 AM MYT from Kuala Lumpur International Airport (KUL).
 
 ![KUL Flight Board Demo](https://lh3.googleusercontent.com/u/0/d/1zgB0-xocXhxn2x9goXJsBf4LOBxK1Rxg)
 
